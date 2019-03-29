@@ -14,16 +14,14 @@ def server_program():
     # configure how many client the server can listen simultaneously
     server_socket.listen(5)
     conn, address = server_socket.accept()
-    print("Connection from: " + str(address))
-    init_value = 0
+    print("Received Connection from: " + str(address))
     while True:
         # receive data stream. it won't accept data packet greater than 1024 bytes
         data = conn.recv(1024).decode()
         if not data:
             break
-        cur_value = int(data) + int(init_value)
-        next_value = int(cur_value) + int(data)
-        print(str(address) + " :" + str(next_value) )
+
+        print(str(data))
 
     conn.close()
 
