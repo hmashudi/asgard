@@ -4,7 +4,7 @@ import socket
 import tailer
 
 def client_program():
-    host = '192.168.33.10'
+    host = '172.17.0.2'
     port = 5000
 
     client_socket = socket.socket()
@@ -12,8 +12,8 @@ def client_program():
     hostname = socket.gethostname()
 
     init_attempt = 0
-    for line in tailer.follow(open('/var/log/auth.log')):
-        if "sshd" and "session opened" in line:
+    for line in tailer.follow(open('/var/log/sshd.log')):
+        if 'password' in line:
             login_attempt = init_attempt + 1
             message = (str(hostname) + " had " + str(login_attempt) + " attempt of ssh session")
             client_socket.send(message.encode())
