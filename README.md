@@ -2,7 +2,7 @@
 Simple client-server ssh login attempt monitoring based on python3 and socket module to communicate between alphaclient and alphaserver. The app will build and packaged in the docker container, and for the basic infrastructure like networking managed via docker-compose file to automate the deployment.
 
 ## Prerequisite
-Before we go we need the following installed on the system  
+Before we go we need the following application installed on the system  
 - [docker](https://docs.docker.com/install/linux/docker-ce/ubuntu/) 
 - [docker-compose](https://docs.docker.com/compose/install/)
 
@@ -17,7 +17,7 @@ This readme guideline created base on Ubuntu 18.04.2 LTS with the following `doc
 
 First we need to clone the asgard repository
 ```
-$ git clone git@github.com:hmashudi/asgard.git
+$ git clone https://github.com/hmashudi/asgard.git
 ```
 
 Once it's done go to asgard directory
@@ -57,21 +57,21 @@ Received connection from 10.5.0.7:37384
 As above log shown that `alphaserver` socket creation, listening status and right now ready for receiving connection from `alphaclient`, and also from the log we can see there are incoming connection from `alphaclient` IP addresses that are ready to report the SSH login attempt metric.  
 
 3. Open new terminal and try to SSH to `alphaclient` containers with the following details
-```
-SSH user: root
-SSH password: PASSWORD
-```
-SSH to alphaclient_1
+
+- SSH user: `root`
+- SSH password: `PASSWORD`
+
+SSH to alphaclient_1 container
 ```
 ssh root@10.5.0.6
 root@10.5.0.6's password:
 ```
-SSH to alphaclient_2
+SSH to alphaclient_2 container
 ```
 ssh root@10.5.0.7
 root@10.5.0.7's password: 
 ```
-4. Check again docker logs on the `alphaserver`
+4. Check again docker logs on the `alphaserver` container
 ```
 $ docker logs -f alphaserver 
 Socket created
@@ -81,3 +81,18 @@ Received connection from 10.5.0.7:37384
 Processed result: ba6b51e048c4 had 1 attempt of ssh session
 Processed result: 3c523ec1e7be had 1 attempt of ssh session
 ```
+As we can confirm on above log `alphaclient_1` and `alphaclient_2` containers reported the SSH login attempt to `alphaserver`
+
+## How it work?
+
+There are 2 logic we spilt it on the `alphaserver` and `alphaclient`
+
+**alphaserver:**
+- the `alphaserver` is responsible to open and listening socket used for communication from/to alphaclient.
+- manage active thread so it can handle multiple `alphaclient` instance.
+- processing/decode the input received from `alphaclient` and present it.
+
+**alphaclient:**
+- `alphaclient` is responsible for monitor and following the log written by SSH process during startup.
+- Check for login activity on the SSH log (/var/log/sshd.log).
+- send login attempt data to `alphaserver`.
