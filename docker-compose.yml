@@ -1,8 +1,8 @@
 ---
 version: '3'
 services:
-  python-alphaserver-1:
-    container_name: alphaserver_1
+  python-alphaserver:
+    container_name: alphaserver
     image: python-alphaserver
     build: ./alphaserver
     networks:
@@ -15,7 +15,7 @@ services:
     image: python-alphaclient
     build: ./alphaclient
     depends_on:
-      - python-alphaserver-1
+      - python-alphaserver
     networks:
       vpcbr:
         ipv4_address: 10.5.0.6
@@ -26,7 +26,7 @@ services:
     image: python-alphaclient
     build: ./alphaclient
     depends_on:
-      - python-alphaserver-1
+      - python-alphaserver
     networks:
       vpcbr:
         ipv4_address: 10.5.0.7
